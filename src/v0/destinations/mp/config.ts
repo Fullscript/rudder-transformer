@@ -4,7 +4,7 @@ const BASE_ENDPOINT = 'https://api.mixpanel.com';
 const BASE_ENDPOINT_EU = 'https://api-eu.mixpanel.com';
 const CREATE_DELETION_TASK_ENDPOINT = 'https://mixpanel.com/api/app/data-deletions/v3.0/';
 
-const getCreateDeletionTaskEndpoint = (projectToken) =>
+const getCreateDeletionTaskEndpoint = (projectToken: string): string =>
   `${CREATE_DELETION_TASK_ENDPOINT}?token=${projectToken}`;
 
 const ConfigCategory = {
@@ -57,7 +57,7 @@ const GROUPS_MAX_BATCH_SIZE = 200;
 const DEL_MAX_BATCH_SIZE = 1000;
 const DISTINCT_ID_MAX_BATCH_SIZE = 1999;
 
-module.exports = {
+export {
   mappingConfig,
   BASE_ENDPOINT,
   DEL_MAX_BATCH_SIZE,

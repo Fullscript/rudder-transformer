@@ -1,7 +1,8 @@
-const lodash = require('lodash');
-const { ConfigurationError, NetworkError } = require('@rudderstack/integrations-lib');
-const { handleHttpRequest } = require('../../../adapters/network');
-const { isHttpStatusSuccess } = require('../../util');
+import lodash from 'lodash';
+import { ConfigurationError, NetworkError } from '@rudderstack/integrations-lib';
+import { handleHttpRequest } from '../../../adapters/network';
+import { isHttpStatusSuccess } from '../../util';
+
 const {
   DEL_MAX_BATCH_SIZE,
   getCreateDeletionTaskEndpoint,

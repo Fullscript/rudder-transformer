@@ -1,4 +1,4 @@
-const {
+import {
   groupEventsByEndpoint,
   batchEvents,
   generateBatchedPayloadForArray,
@@ -6,10 +6,11 @@ const {
   trimTraits,
   generatePageOrScreenCustomEventName,
   getTransformedJSON,
-} = require('./util');
-const { FEATURE_GZIP_SUPPORT } = require('../../util/constant');
-const { ConfigurationError } = require('@rudderstack/integrations-lib');
-const { mappingConfig, ConfigCategory } = require('./config');
+} from './util';
+import { FEATURE_GZIP_SUPPORT } from '../../util/constant';
+import { ConfigurationError } from '@rudderstack/integrations-lib';
+import { mappingConfig, ConfigCategory } from './config';
+import { MPMessageType } from './types';
 
 const maxBatchSizeMock = 2;
 
@@ -188,7 +189,7 @@ describe('Unit test cases for batchEvents', () => {
       },
     ];
 
-    const result = batchEvents(successRespList, maxBatchSizeMock);
+    const result = batchEvents(successRespList, maxBatchSizeMock, {});
 
     expect(result).toEqual([
       {
@@ -228,7 +229,7 @@ describe('Unit test cases for batchEvents', () => {
 
   it('should return an empty array when successRespList is empty', () => {
     const successRespList = [];
-    const result = batchEvents(successRespList, maxBatchSizeMock);
+    const result = batchEvents(successRespList, maxBatchSizeMock, {});
     expect(result).toEqual([]);
   });
 });
@@ -439,28 +440,36 @@ describe('Unit test cases for trimTraits', () => {
 
 describe('generatePageOrScreenCustomEventName', () => {
   it('should throw a ConfigurationError when userDefinedEventTemplate is not provided', () => {
-    const message = { name: 'Home' };
-    const userDefinedEventTemplate = undefined;
+    const message: MPMessageType = { name: 'Home', type: 'page' };
+    const userDefinedEventTemplate = '';
     expect(() => {
       generatePageOrScreenCustomEventName(message, userDefinedEventTemplate);
     }).toThrow(ConfigurationError);
   });
 
   it('should generate a custom event name when userDefinedEventTemplate contains event template and message object is provided', () => {
-    let message = { name: 'Doc', properties: { category: 'Integration' } };
+    let message: MPMessageType = {
+      name: 'Doc',
+      properties: { category: 'Integration' },
+      type: 'page',
+    };
     const userDefinedEventTemplate = 'Viewed {{ category }} {{ name }} page';
     let expected = 'Viewed Integration Doc page';
     let result = generatePageOrScreenCustomEventName(message, userDefinedEventTemplate);
     expect(result).toBe(expected);
 
-    message = { name: true, properties: { category: 0 } };
+    message = { name: true, properties: { category: 0 }, type: 'page' };
     expected = 'Viewed 0 true page';
     result = generatePageOrScreenCustomEventName(message, userDefinedEventTemplate);
     expect(result).toBe(expected);
   });
 
   it('should generate a custom event name when userDefinedEventTemplate contains event template and category or name is missing in message object', () => {
-    const message = { name: 'Doc', properties: { category: undefined } };
+    const message: MPMessageType = {
+      name: 'Doc',
+      properties: { category: undefined },
+      type: 'page',
+    };
     const userDefinedEventTemplate = 'Viewed   {{ category }}   {{ name }} page  someKeyword';
     const expected = 'Viewed     Doc page  someKeyword';
     const result = generatePageOrScreenCustomEventName(message, userDefinedEventTemplate);
@@ -468,7 +477,11 @@ describe('generatePageOrScreenCustomEventName', () => {
   });
 
   it('should generate a custom event name when userDefinedEventTemplate contains only category or name placeholder and message object is provided', () => {
-    const message = { name: 'Doc', properties: { category: 'Integration' } };
+    const message: MPMessageType = {
+      name: 'Doc',
+      properties: { category: 'Integration' },
+      type: 'page',
+    };
     const userDefinedEventTemplate = 'Viewed {{ name }} page';
     const expected = 'Viewed Doc page';
     const result = generatePageOrScreenCustomEventName(message, userDefinedEventTemplate);
@@ -476,7 +489,7 @@ describe('generatePageOrScreenCustomEventName', () => {
   });
 
   it('should return the userDefinedEventTemplate when it does not contain placeholder {{}}', () => {
-    const message = { name: 'Index' };
+    const message: MPMessageType = { name: '', type: '' };
     const userDefinedEventTemplate = 'Viewed a Home page';
     const expected = 'Viewed a Home page';
     const result = generatePageOrScreenCustomEventName(message, userDefinedEventTemplate);
@@ -484,9 +497,9 @@ describe('generatePageOrScreenCustomEventName', () => {
   });
 
   it('should return a event name when message object is not provided/empty', () => {
-    const message = {};
+    const message: MPMessageType = { name: '', type: '' };
     const userDefinedEventTemplate = 'Viewed  {{ category }}  {{ name }}  page  someKeyword';
-    const expected = 'Viewed    page  someKeyword';
+    const expected = 'Viewed     page  someKeyword';
     const result = generatePageOrScreenCustomEventName(message, userDefinedEventTemplate);
     expect(result).toBe(expected);
   });
@@ -494,7 +507,8 @@ describe('generatePageOrScreenCustomEventName', () => {
 
 describe('Unit test cases for getTransformedJSON', () => {
   it('should transform the message payload to appropriate payload if device.token is present', () => {
-    const message = {
+    const message: MPMessageType = {
+      type: 'identify',
       context: {
         app: {
           build: '1',
@@ -536,7 +550,8 @@ describe('Unit test cases for getTransformedJSON', () => {
   });
 
   it('should transform the message payload to appropriate payload if device.token is present and device.token is null', () => {
-    const message = {
+    const message: MPMessageType = {
+      type: 'identify',
       context: {
         app: {
           build: '1',
@@ -579,7 +594,8 @@ describe('Unit test cases for getTransformedJSON', () => {
   });
 
   it('should transform the message payload to appropriate payload if device.token is not present for apple device', () => {
-    const message = {
+    const message: MPMessageType = {
+      type: 'identify',
       context: {
         app: {
           build: '1',
@@ -619,7 +635,8 @@ describe('Unit test cases for getTransformedJSON', () => {
   });
 
   it('should transform the message payload to appropriate payload if device.token is not present for android device', () => {
-    const message = {
+    const message: MPMessageType = {
+      type: 'identify',
       context: {
         app: {
           build: '1',
@@ -662,7 +679,8 @@ describe('Unit test cases for getTransformedJSON', () => {
   });
 
   it('should transform the message payload to appropriate payload if device is not present', () => {
-    const message = {
+    const message: MPMessageType = {
+      type: 'identify',
       context: {
         app: {
           build: '1',

@@ -1,8 +1,5 @@
-const lodash = require('lodash');
-const get = require('get-value');
-const { InstrumentationError, ConfigurationError } = require('@rudderstack/integrations-lib');
-const { EventType } = require('../../../constants');
-const {
+import { MixpanelConfig, MPDestination, MPMessageType, MPRouterRequestType } from './types';
+import {
   base64Convertor,
   constructPayload,
   defaultPostRequestConfig,
@@ -18,7 +15,23 @@ const {
   groupEventsByType,
   parseConfigArray,
   combineBatchRequestsWithSameJobIds,
-} = require('../../util');
+} from '../../util';
+
+import {
+  createIdentifyResponse,
+  isImportAuthCredentialsAvailable,
+  buildUtmParams,
+  groupEventsByEndpoint,
+  batchEvents,
+  trimTraits,
+  generatePageOrScreenCustomEventName,
+  recordBatchSizeMetrics,
+} from './util';
+
+const lodash = require('lodash');
+const get = require('get-value');
+const { InstrumentationError, ConfigurationError } = require('@rudderstack/integrations-lib');
+const { EventType } = require('../../../constants');
 const {
   ConfigCategory,
   mappingConfig,
@@ -28,25 +41,16 @@ const {
   ENGAGE_MAX_BATCH_SIZE,
   GROUPS_MAX_BATCH_SIZE,
 } = require('./config');
-const {
-  createIdentifyResponse,
-  isImportAuthCredentialsAvailable,
-  buildUtmParams,
-  groupEventsByEndpoint,
-  batchEvents,
-  trimTraits,
-  generatePageOrScreenCustomEventName,
-  recordBatchSizeMetrics,
-} = require('./util');
+
 const { CommonUtils } = require('../../../util/common');
 
 // ref: https://help.mixpanel.com/hc/en-us/articles/115004613766-Default-Properties-Collected-by-Mixpanel
 const mPEventPropertiesConfigJson = mappingConfig[ConfigCategory.EVENT_PROPERTIES.name];
 
-const setImportCredentials = (destConfig) => {
+const setImportCredentials = (destConfig: MixpanelConfig): any => {
   const endpoint =
     destConfig.dataResidency === 'eu' ? `${BASE_ENDPOINT_EU}/import/` : `${BASE_ENDPOINT}/import/`;
-  const params = { strict: destConfig.strictMode ? 1 : 0 };
+  const params: any = { strict: destConfig.strictMode ? 1 : 0 };
   const { serviceAccountUserName, serviceAccountSecret, projectId, token } = destConfig;
   let credentials;
   if (token) {
@@ -62,7 +66,12 @@ const setImportCredentials = (destConfig) => {
   return { endpoint, headers, params };
 };
 
-const responseBuilderSimple = (payload, message, eventType, destConfig) => {
+const responseBuilderSimple = (
+  payload: any,
+  message: MPMessageType,
+  eventType: string,
+  destConfig: MixpanelConfig,
+): any => {
   const response = defaultRequestConfig();
   response.method = defaultPostRequestConfig.requestMethod;
   response.userId = message.userId || message.anonymousId;
@@ -103,7 +112,11 @@ const responseBuilderSimple = (payload, message, eventType, destConfig) => {
   return response;
 };
 
-const processRevenueEvents = (message, destination, revenueValue) => {
+const processRevenueEvents = (
+  message: MPMessageType,
+  destination: MPDestination,
+  revenueValue: number,
+): any => {
   const transactions = {
     $time: getEventTime(message),
     $amount: revenueValue,
@@ -158,15 +171,13 @@ const getEventValueForTrackEvent = (message, destination) => {
   const mappedProperties = constructPayload(message, mPEventPropertiesConfigJson);
   // This is to conform with SDKs sending timestamp component with messageId
   // example: "1662363980287-168cf720-6227-4b56-a98e-c49bdc7279e9"
-  if (mappedProperties.$insert_id) {
+  if (mappedProperties?.$insert_id) {
     mappedProperties.$insert_id = mappedProperties.$insert_id.slice(-36);
   }
 
   const unixTimestamp = toUnixTimestampInMS(message.timestamp || message.originalTimestamp);
 
-  const traits = destination.Config?.dropTraitsInTrackEvent
-    ? {}
-    : { ...message?.context?.traits };
+  const traits = destination.Config?.dropTraitsInTrackEvent ? {} : { ...message?.context?.traits };
 
   let properties = {
     ...message.properties,
@@ -201,8 +212,8 @@ const getEventValueForTrackEvent = (message, destination) => {
   return responseBuilderSimple(payload, message, EventType.TRACK, destination.Config);
 };
 
-const processTrack = (message, destination) => {
-  const returnValue = [];
+const processTrack = (message: MPMessageType, destination: MPDestination): any[] => {
+  const returnValue: any[] = [];
 
   const revenue = get(message, 'properties.revenue');
 
@@ -221,7 +232,12 @@ const processTrack = (message, destination) => {
   return returnValue;
 };
 
-const createSetOnceResponse = (message, type, destination, setOnce) => {
+const createSetOnceResponse = (
+  message: MPMessageType,
+  type: string,
+  destination: MPDestination,
+  setOnce: any,
+): any => {
   const payload = {
     $set_once: setOnce,
     $token: destination.Config.token,
@@ -235,25 +251,29 @@ const createSetOnceResponse = (message, type, destination, setOnce) => {
   return responseBuilderSimple(payload, message, type, destination.Config);
 };
 
-const processIdentifyEvents = async (message, type, destination) => {
-  const messageClone = { ...message };
-  let seggregatedTraits = {};
-  const returnValue = [];
-  let setOnceProperties = [];
+const processIdentifyEvents = (
+  message: MPMessageType,
+  type: string,
+  destination: MPDestination,
+): any[] => {
+  const messageClone: any = { ...message };
+  let seggregatedTraits: any = {};
+  const returnValue: any[] = [];
+  let setOnceProperties: any[] = [];
 
   // making payload for set_once properties
   if (destination.Config.setOnceProperties && destination.Config.setOnceProperties.length > 0) {
     setOnceProperties = parseConfigArray(destination.Config.setOnceProperties, 'property');
     seggregatedTraits = trimTraits(
-      messageClone.traits,
-      messageClone.context.traits,
+      messageClone?.traits,
+      messageClone.context?.traits,
       setOnceProperties,
     );
     messageClone.traits = seggregatedTraits.traits;
-    messageClone.context.traits = seggregatedTraits.contextTraits;
-    if (Object.keys(seggregatedTraits.setOnce).length > 0) {
+    messageClone.context.traits = seggregatedTraits?.contextTraits;
+    if (Object.keys(seggregatedTraits?.setOnce).length > 0) {
       returnValue.push(
-        createSetOnceResponse(messageClone, type, destination, seggregatedTraits.setOnce),
+        createSetOnceResponse(messageClone, type, destination, seggregatedTraits?.setOnce),
       );
     }
   }
@@ -289,7 +309,11 @@ const processIdentifyEvents = async (message, type, destination) => {
   return returnValue;
 };
 
-const processPageOrScreenEvents = (message, type, destination) => {
+const processPageOrScreenEvents = (
+  message: MPMessageType,
+  type: string,
+  destination: MPDestination,
+): any[] => {
   const {
     token,
     identityMergeApi,
@@ -328,14 +352,14 @@ const processPageOrScreenEvents = (message, type, destination) => {
     properties.$browser_version = browser.version;
   }
 
-  let eventName;
+  let eventName: string;
   if (type === 'page') {
     eventName = useUserDefinedPageEventName
-      ? generatePageOrScreenCustomEventName(message, userDefinedPageEventTemplate)
+      ? generatePageOrScreenCustomEventName(message, userDefinedPageEventTemplate || '')
       : 'Loaded a Page';
   } else {
     eventName = useUserDefinedScreenEventName
-      ? generatePageOrScreenCustomEventName(message, userDefinedScreenEventTemplate)
+      ? generatePageOrScreenCustomEventName(message, userDefinedScreenEventTemplate || '')
       : 'Loaded a Screen';
   }
 
@@ -371,8 +395,12 @@ const processAliasEvents = (message, type, destination) => {
   return responseBuilderSimple(payload, message, type, destination.Config);
 };
 
-const processGroupEvents = (message, type, destination) => {
-  const returnValue = [];
+const processGroupEvents = (
+  message: MPMessageType,
+  type: string,
+  destination: MPDestination,
+): any[] => {
+  const returnValue: any[] = [];
   const groupKeys = getValuesAsArrayFromConfig(destination.Config.groupKeySettings, 'groupKey');
   let groupKeyVal;
   if (groupKeys.length > 0) {
@@ -396,9 +424,9 @@ const processGroupEvents = (message, type, destination) => {
         if (destination?.Config.identityMergeApi === 'simplified') {
           payload.$distinct_id = message.userId || `$device:${message.anonymousId}`;
         }
-        const response = responseBuilderSimple(payload, message, type, destination.Config);
+        const response: any = responseBuilderSimple(payload, message, type, destination.Config);
         returnValue.push(response);
-        groupKeyVal.forEach((value) => {
+        groupKeyVal.forEach((value: any) => {
           const groupPayload = {
             $token: destination.Config.token,
             $group_key: groupKey,
@@ -432,7 +460,10 @@ const processGroupEvents = (message, type, destination) => {
   return returnValue;
 };
 
-const processSingleMessage = (message, destination) => {
+const processSingleMessage = (
+  message: MPMessageType,
+  destination: MPDestination,
+): MPRouterRequestType[] => {
   const clonedMessage = { ...message };
   if (clonedMessage.userId) {
     clonedMessage.userId = String(clonedMessage.userId);
@@ -465,12 +496,13 @@ const processSingleMessage = (message, destination) => {
   }
 };
 
-const process = (event) => processSingleMessage(event.message, event.destination);
+const process = (event: MPRouterRequestType): MPRouterRequestType[] =>
+  processSingleMessage(event.message, event.destination);
 
 // Documentation about how Mixpanel handles the utm parameters
 // Ref: https://help.mixpanel.com/hc/en-us/articles/115004613766-Default-Properties-Collected-by-Mixpanel
 // Ref: https://help.mixpanel.com/hc/en-us/articles/115004561786-Track-UTM-Tags
-const processRouterDest = async (inputs, reqMetadata) => {
+const processRouterDest = async (inputs: MPRouterRequestType[], reqMetadata: any) => {
   const batchSize = {
     engage: 0,
     groups: 0,
@@ -479,9 +511,9 @@ const processRouterDest = async (inputs, reqMetadata) => {
 
   const groupedEvents = groupEventsByType(inputs);
   const response = await Promise.all(
-    groupedEvents.map(async (listOfEvents) => {
+    groupedEvents.map(async (listOfEvents: MPRouterRequestType[]) => {
       let transformedPayloads = await Promise.all(
-        listOfEvents.map(async (event) => {
+        listOfEvents.map(async (event: MPRouterRequestType) => {
           try {
             if (event.message.statusCode) {
               // already transformed event
@@ -491,7 +523,7 @@ const processRouterDest = async (inputs, reqMetadata) => {
                 destination: event.destination,
               };
             }
-            let processedEvents = await process(event);
+            let processedEvents: MPRouterRequestType[] = await process(event);
             processedEvents = CommonUtils.toArray(processedEvents);
             return processedEvents.map((res) => ({
               message: res,

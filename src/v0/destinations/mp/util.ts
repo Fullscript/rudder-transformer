@@ -1,3 +1,5 @@
+import { MPDestination, MPMessageType } from './types';
+
 const lodash = require('lodash');
 const set = require('set-value');
 const get = require('get-value');
@@ -39,7 +41,7 @@ const mPSetOnceConfigJson = mappingConfig[ConfigCategory.SET_ONCE.name];
  * @param rawPayload
  * @returns
  */
-const populateDeviceFieldsInPayload = (message, rawPayload) => {
+const populateDeviceFieldsInPayload = (message: MPMessageType, rawPayload: any): any => {
   const device = get(message, 'context.device');
   let payload = {};
   let updatedRawPayload = { ...rawPayload };
@@ -64,7 +66,11 @@ const populateDeviceFieldsInPayload = (message, rawPayload) => {
  * @param {*} useNewMapping a variable to support backward compatibility
  * @returns
  */
-const getTransformedJSON = (message, mappingJson, useNewMapping) => {
+const getTransformedJSON = (
+  message: MPMessageType,
+  mappingJson: any,
+  useNewMapping: boolean | undefined,
+): any => {
   let rawPayload = constructPayload(message, mappingJson);
   if (
     isDefined(rawPayload.$geo_source) &&
@@ -119,13 +125,18 @@ const getTransformedJSON = (message, mappingJson, useNewMapping) => {
  * @param {*} responseBuilderSimple function to generate response
  * @returns
  */
-const createIdentifyResponse = (message, type, destination, responseBuilderSimple) => {
+const createIdentifyResponse = (
+  message: MPMessageType,
+  type: string,
+  destination: MPDestination,
+  responseBuilderSimple: any,
+): any => {
   // this variable is used for supporting backward compatibility
   const { useNewMapping, token } = destination.Config;
   // user payload created
   const properties = getTransformedJSON(message, mPIdentifyConfigJson, useNewMapping);
 
-  const payload = {
+  const payload: any = {
     $set: properties,
     $token: token,
     $distinct_id: message.userId || message.anonymousId,
@@ -150,7 +161,7 @@ const createIdentifyResponse = (message, type, destination, responseBuilderSimpl
  * @param {*} destination inputs from dashboard
  * @returns
  */
-const isImportAuthCredentialsAvailable = (destination) =>
+const isImportAuthCredentialsAvailable = (destination: MPDestination): any =>
   destination.Config.token ||
   (destination.Config.serviceAccountSecret &&
     destination.Config.serviceAccountUserName &&
@@ -170,8 +181,8 @@ const isImportAuthCredentialsAvailable = (destination) =>
  * };
  * { utm_campaign: 'summer_sale', utm_source: 'newsletter', utm_medium: 'email' }
  */
-const buildUtmParams = (campaign) => {
-  const utmParams = {};
+const buildUtmParams = (campaign: any): any => {
+  const utmParams: any = {};
   if (isObject(campaign)) {
     Object.keys(campaign).forEach((key) => {
       if (key === 'name') {
@@ -190,15 +201,15 @@ const buildUtmParams = (campaign) => {
  * @param {*} events - An array of events
  * @returns
  */
-const groupEventsByEndpoint = (events) => {
+const groupEventsByEndpoint = (events: any) => {
   const eventMap = {
     engage: [],
     groups: [],
     import: [],
   };
-  const batchErrorRespList = [];
+  const batchErrorRespList: any[] = [];
 
-  events.forEach((result) => {
+  events.forEach((result: any) => {
     if (result.message) {
       const { destination, metadata } = result;
       const message = CommonUtils.toArray(result.message);
@@ -223,7 +234,7 @@ const groupEventsByEndpoint = (events) => {
   };
 };
 
-const generateBatchedPayloadForArray = (events, reqMetadata) => {
+const generateBatchedPayloadForArray = (events: any, reqMetadata: any): any => {
   const { batchedRequest } = defaultBatchRequestConfig();
   const firstEvent = events[0];
   batchedRequest.endpoint = firstEvent.endpoint;
@@ -242,9 +253,9 @@ const generateBatchedPayloadForArray = (events, reqMetadata) => {
   return batchedRequest;
 };
 
-const batchEvents = (successRespList, maxBatchSize, reqMetadata) => {
+const batchEvents = (successRespList: any, maxBatchSize: number, reqMetadata: any): any[] => {
   const batchedEvents = batchMultiplexedEvents(successRespList, maxBatchSize);
-  return batchedEvents.map((batch) => {
+  return batchedEvents.map((batch: any) => {
     const batchedRequest = generateBatchedPayloadForArray(batch.events, reqMetadata);
     return getSuccessRespEvents(batchedRequest, batch.metadata, batch.destination, true);
   });
@@ -266,8 +277,8 @@ const batchEvents = (successRespList, maxBatchSize, reqMetadata) => {
  * const result = trimTraits(traits, contextTraits, setOnceProperties);
  * // Output: { traits: { age: 30 }, contextTraits: { language: 'English' }, setOnce: { $name: 'John', $country_code: 'USA', city: 'New York'} }
  */
-function trimTraits(traits, contextTraits, setOnceProperties) {
-  let sentOnceTransformedPayload;
+function trimTraits(traits: object, contextTraits: object, setOnceProperties: string[]): object {
+  let sentOnceTransformedPayload: any;
   // Create a copy of the original traits object
   const traitsCopy = { ...traits };
   const contextTraitsCopy = { ...contextTraits };
@@ -328,7 +339,10 @@ function trimTraits(traits, contextTraits, setOnceProperties) {
  * const message = {name: 'Home', properties: {category: 'Index'}};
  * output: "Viewed Index Home Page"
  */
-const generatePageOrScreenCustomEventName = (message, userDefinedEventTemplate) => {
+const generatePageOrScreenCustomEventName = (
+  message: MPMessageType,
+  userDefinedEventTemplate: string,
+): string => {
   if (!userDefinedEventTemplate) {
     throw new ConfigurationError(
       'Event name template is not configured. Please provide a valid value for the `Page/Screen Event Name Template` in the destination dashboard.',
@@ -339,7 +353,7 @@ const generatePageOrScreenCustomEventName = (message, userDefinedEventTemplate) 
 
   if (isDefinedAndNotNull(message.properties?.category)) {
     // Replace {{ category }} with actual values
-    eventName = eventName.replace(/{{\s*category\s*}}/g, message.properties.category);
+    eventName = eventName.replace(/{{\s*category\s*}}/g, message?.properties?.category);
   } else {
     // find {{ category }} surrounded by whitespace characters and replace it with a single whitespace character
     eventName = eventName.replace(/\s{{\s*category\s*}}\s/g, ' ');
@@ -366,7 +380,10 @@ const generatePageOrScreenCustomEventName = (message, userDefinedEventTemplate) 
  * @param {string} destinationId - The ID of the destination.
  * @returns {void}
  */
-const recordBatchSizeMetrics = (batchSize, destinationId) => {
+const recordBatchSizeMetrics = (
+  batchSize: { engage: number; groups: number; import: number },
+  destinationId: string,
+): void => {
   stats.gauge('mixpanel_batch_engage_pack_size', batchSize.engage, {
     destination_id: destinationId,
   });
@@ -378,7 +395,7 @@ const recordBatchSizeMetrics = (batchSize, destinationId) => {
   });
 };
 
-module.exports = {
+export {
   createIdentifyResponse,
   isImportAuthCredentialsAvailable,
   buildUtmParams,
