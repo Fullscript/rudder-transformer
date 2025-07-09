@@ -101,8 +101,9 @@ if (clusterEnabled) {
     // Log process info before exit
     logProcessInfo();
 
-    // Exit with error code
-    process.exit(1);
+    // Trigger graceful shutdown by emitting SIGTERM
+    // This allows proper cleanup of resources, connections, etc.
+    process.emit('SIGTERM');
   });
 
   // Handle unhandled promise rejections
@@ -117,8 +118,9 @@ if (clusterEnabled) {
     // Log process info before exit
     logProcessInfo();
 
-    // Exit with error code
-    process.exit(1);
+    // Trigger graceful shutdown by emitting SIGTERM
+    // This allows proper cleanup of resources, connections, etc.
+    process.emit('SIGTERM');
   });
 
   gracefulShutdown(server, {
@@ -126,6 +128,9 @@ if (clusterEnabled) {
     timeout: 30000, // timeout: 30 secs
     forceExit: true, // triggers process.exit() at the end of shutdown process
     finally: finalFunction,
+    onShutdown: async (signal) => {
+      logger.info(`Graceful shutdown initiated by signal: ${signal}`);
+    },
   });
 
   logger.info(`App started. Listening on port: ${port}`);
