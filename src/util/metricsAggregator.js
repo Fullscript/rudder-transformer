@@ -91,9 +91,11 @@ class MetricsAggregator {
       logger.debug(`[MetricsAggregator] Worker ${cluster.worker.id} received metrics request`);
       try {
         const metrics = await this.prometheusInstance.prometheusRegistry.getMetricsAsJSON();
+        // TODO: Remove this once we have a proper solution for IPC JSON parsing errors
+        const sanitizedMetrics = JSON.parse(JSON.stringify(metrics));
         cluster.worker.send({
           type: MESSAGE_TYPES.GET_METRICS_RES,
-          metrics,
+          metrics: sanitizedMetrics,
           requestId: message.requestId,
         });
       } catch (error) {
