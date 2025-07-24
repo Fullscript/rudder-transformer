@@ -1,6 +1,7 @@
+import { forEachInBatches } from '@rudderstack/integrations-lib';
 import { BaseStrategy } from './base';
 import { GenericProxyHandlerInput, IterableBulkProxyInput } from '../types';
-import { checkIfEventIsAbortableAndExtractErrorMessage } from '../utils';
+import { createBatchErrorChecker } from '../utils';
 import { DeliveryJobState, DeliveryV1Response } from '../../../../types';
 import { TransformerProxyError } from '../../../../v0/util/errorTypes';
 import { getDynamicErrorType } from '../../../../adapters/utils/networkUtils';
@@ -16,23 +17,28 @@ class TrackIdentifyStrategy extends BaseStrategy {
     const finalData = events || users;
 
     if (finalData) {
-      finalData.forEach((event, idx) => {
-        const parsedOutput = {
-          statusCode: 200,
-          metadata: rudderJobMetadata[idx],
-          error: 'success',
-        };
+      // Create optimized error checker for this batch
+      const checkEventError = createBatchErrorChecker(destinationResponse);
 
-        const { isAbortable, errorMsg } = checkIfEventIsAbortableAndExtractErrorMessage(
-          event,
-          destinationResponse,
-        );
-        if (isAbortable) {
-          parsedOutput.statusCode = 400;
-          parsedOutput.error = errorMsg;
-        }
-        responseWithIndividualEvents.push(parsedOutput);
-      });
+      // Process events in batches for better performance
+      forEachInBatches(
+        finalData,
+        (event, idx) => {
+          const parsedOutput = {
+            statusCode: 200,
+            metadata: rudderJobMetadata[idx],
+            error: 'success',
+          };
+
+          const { isAbortable, errorMsg } = checkEventError(event);
+          if (isAbortable) {
+            parsedOutput.statusCode = 400;
+            parsedOutput.error = errorMsg;
+          }
+          responseWithIndividualEvents.push(parsedOutput);
+        },
+        { batchSize: 50 },
+      );
     }
 
     return {
