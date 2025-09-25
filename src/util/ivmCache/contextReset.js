@@ -154,7 +154,8 @@ async function createNewContext(cachedIsolate, credentials = {}) {
     await injectFreshApis(jail, cachedIsolate, credentials);
 
     // Set up bootstrap script in the new context
-    await cachedIsolate.bootstrap.run(newContext);
+    // await cachedIsolate.bootstrap.run(newContext);
+    const newBootstrapScriptResult = await cachedIsolate.bootstrap.run(newContext);
 
     // Re-instantiate the user's custom script module in the new context
     await cachedIsolate.customScriptModule.instantiate(newContext, async (spec) => {
@@ -177,7 +178,8 @@ async function createNewContext(cachedIsolate, credentials = {}) {
       isolate: cachedIsolate.isolate,
       bootstrap: cachedIsolate.bootstrap,
       customScriptModule: cachedIsolate.customScriptModule,
-      bootstrapScriptResult: cachedIsolate.bootstrapScriptResult,
+      // bootstrapScriptResult: cachedIsolate.bootstrapScriptResult,
+      bootstrapScriptResult: newBootstrapScriptResult,
       fnRef,
       fName: cachedIsolate.fName,
       logs: cachedIsolate.logs,
