@@ -13,6 +13,8 @@ bindings:
   - name: OAuthSecretError
     path: '@rudderstack/integrations-lib'
   - path: ./utils
+  - name: toUnixTimestampInMS
+    path: ../../../../v0/util
 
 steps:
   - name: validateInput
@@ -43,7 +45,7 @@ steps:
             "user_agent": .context.userAgent,
             "idfa": $.isAppleFamily(os)? (hashData? $.SHA256(.context.device.advertisingId.trim()): .context.device.advertisingId): null,
             "aaid": os === "android" && .context.device ? (hashData? $.SHA256(.context.device.advertisingId.trim()): .context.device.advertisingId): null,
-            "opt_out": .properties.optOut,
+            "data_processing_options": .properties.optOut ? {"modes": ["LDU"]} : null,
             "screen_dimensions": {"width": .context.screen.width, "height":  .context.screen.height},
           });
           $.removeUndefinedAndNullValues(user)
@@ -63,9 +65,8 @@ steps:
           const revenue_in_cents = $.populateRevenueField($.outputs.prepareTrackPayload.eventType.tracking_type,^.message.properties)
           const customFields = .message.().({
             "currency": .properties.currency,
-            "value_decimal": revenue_in_cents ? revenue_in_cents / 100,
+            "value": revenue_in_cents ? revenue_in_cents / 100,
             "item_count": $.outputs.prepareTrackPayload.eventType.tracking_type === 'Purchase' ? (Array.isArray(.properties.products) && .properties.products.length) || (.properties.itemCount && Number(.properties.itemCount)) : null,
-            "value": revenue_in_cents,
             "conversion_id": .properties.conversionId || .messageId,
           });
           $.removeUndefinedAndNullValues(customFields)
@@ -110,18 +111,19 @@ steps:
         template: |
           { 
             events: [{
+            "action_source": $.getActionSource(.message),
             "click_id": .message.properties.clickId,
-            "event_at": .message.().({{{{$.getGenericPaths("timestamp")}}}}),
-            "event_type": $.outputs.prepareTrackPayload.eventType,
+            "event_at": $.toUnixTimestampInMS(.message.().({{{{$.getGenericPaths("timestamp")}}}})),
+            "type": $.convertToUpperSnakeCase($.outputs.prepareTrackPayload.eventType),
             "user": $.outputs.prepareTrackPayload.prepareUserObject,
-            "event_metadata": $.removeUnsupportedFields($.outputs.prepareTrackPayload.eventType.tracking_type, $.outputs.prepareTrackPayload.combineAllEcomFields),
+            "metadata": $.removeUnsupportedFields($.outputs.prepareTrackPayload.eventType.tracking_type, $.outputs.prepareTrackPayload.combineAllEcomFields),
             }]
           }
 
   - name: payload
     condition: $.outputs.messageType === {{$.EventType.TRACK}}
     template: |
-      const outputPayload = $.outputs.prepareTrackPayload
+      const outputPayload = { data: $.outputs.prepareTrackPayload }
 
   - name: buildResponseForProcessTransformation
     description: build response
@@ -134,5 +136,5 @@ steps:
         "Authorization": "Bearer "+ accessToken,
         "Content-Type": "application/json"
         }
-      response.endpoint = $.ENDPOINT+.destination.Config.accountId;
+      response.endpoint = $.ENDPOINT+.destination.Config.accountId+"/conversion_events";
       finalResponse = response;

@@ -13,7 +13,7 @@ const batchEventChunks = (eventChunks) => {
           response.destination = event.destination;
           response.metadata = [event.metadata];
         } else {
-          response.message.body.JSON.events.push(...event.message[0].body.JSON.events);
+          response.message.body.JSON.data.events.push(...event.message[0].body.JSON.data.events);
           response.metadata.push(event.metadata);
         }
       });
@@ -104,10 +104,39 @@ const removeUnsupportedFields = (eventType, eventMetadata) => {
   return updatedEventMetadata;
 };
 
+const convertToUpperSnakeCase = (type) => {
+  const trackingTypeMap = {
+    Purchase: 'PURCHASE',
+    AddToCart: 'ADD_TO_CART',
+    ViewContent: 'VIEW_CONTENT',
+    AddToWishlist: 'ADD_TO_WISHLIST',
+    Search: 'SEARCH',
+    Lead: 'LEAD',
+    SignUp: 'SIGN_UP',
+    PageVisit: 'PAGE_VIEW',
+    Custom: 'CUSTOM',
+  };
+
+  return { ...type, tracking_type: trackingTypeMap[type.tracking_type] };
+};
+
+const getActionSource = (message) => {
+  const actionSourceMap = {
+    web: 'WEBSITE',
+    mobile: 'APP',
+    server: 'OFFLINE',
+    sources: 'OFFLINE',
+  };
+
+  return message.properties.actionSource || actionSourceMap[message.channel] || 'OTHER';
+};
+
 module.exports = {
   batchEvents,
   batchEventChunks,
   populateRevenueField,
   calculateDefaultRevenue,
   removeUnsupportedFields,
+  convertToUpperSnakeCase,
+  getActionSource,
 };
