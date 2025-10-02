@@ -113,7 +113,7 @@ const convertToUpperSnakeCase = (type) => {
     Search: 'SEARCH',
     Lead: 'LEAD',
     SignUp: 'SIGN_UP',
-    PageVisit: 'PAGE_VIEW',
+    PageVisit: 'PAGE_VISIT',
     Custom: 'CUSTOM',
   };
 
