@@ -124,8 +124,6 @@ const getActionSource = (message) => {
   const actionSourceMap = {
     web: 'WEBSITE',
     mobile: 'APP',
-    server: 'OFFLINE',
-    sources: 'OFFLINE',
   };
 
   return message.properties.actionSource || actionSourceMap[message.channel] || 'OTHER';
