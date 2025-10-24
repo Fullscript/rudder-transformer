@@ -8,11 +8,14 @@
       - in: path
         name: version
         required: true
+        description: The version of the API
         schema:
           type: string
+        enum:
+          - v2
       - in: path
         name: source
-        description: The source identifier
+        description: The source type. The lowercase value of the source name in the definition.
         required: true
         schema:
           type: string
@@ -21,9 +24,24 @@
         application/json:
           schema:
             $ref: '../components/schemas/sourceEnrichmentRequest.yaml'
+      examples:
+        request:
+          summary: Source Enrichment Request
+          value:
+            - $ref: '../components/examples/sourceEnrichment/request.yaml'
     responses:
+      404:
+        description: Source type not supported
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                errorMessage:
+                  type: string
+                  example: 'Source type not supported'
       200:
-        description: Success
+        description: Success (either all or some of the events were enriched successfully). The failure reason is returned in the errorMessage field.
         content:
           application/json:
             schema:
@@ -34,15 +52,17 @@
                 summary: Source Enrichment Success
                 value:
                     - $ref: '../components/examples/sourceEnrichment/success.yaml'
+              failure:
+                summary: Source Enrichment Partial Success
+                value:
+                  - $ref: '../components/examples/sourceEnrichment/failure.yaml'
       500:
-        description: Failure (one or more events failed to be enriched)
+        description: Internal Server Error
         content:
           application/json:
             schema:
               type: object
-              $ref: '../components/schemas/sourceEnrichmentResponse.yaml'
-            examples:
-              failure:
-                summary: Source Enrichment Failure
-                value:
-                  - $ref: '../components/examples/sourceEnrichment/failure.yaml'
+              properties:
+                errorMessage:
+                  type: string
+                  example: 'Error message'

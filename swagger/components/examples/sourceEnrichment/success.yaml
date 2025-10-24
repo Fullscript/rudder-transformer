@@ -3,10 +3,20 @@ data:
       event:
         context:
           traits:
-            created_time: '1758794728'
-            leadgen_id: '1459076748710713'
-            page_id: '112464600187556'
-            form_id: '1616801872291121'
+            created_time: '<created_time>'
+            leadgen_id: '<leadgen_id>'
+            page_id: '<page_id>'
+            form_id: '<form_id>'
+            form_question_1: 'form_response_1'
+            form_question_2: 'form_response_2'
+            form_question_3: 'form_response_3'
+            form_question_4: 'form_response_4'
+            form_question_5: 'form_response_5'
+            form_question_6: 'form_response_6'
+            form_question_7: 'form_response_7'
+            form_question_8: 'form_response_8'
+            form_question_9: 'form_response_9'
+            form_question_10: 'form_response_10'
         type: identify
         userId: <leadgen_id>
         anonymousId: <uuid>
@@ -25,10 +35,20 @@ data:
       event:
         context:
           traits:
-            created_time: '1758794728'
-            leadgen_id: '1459076748710713'
-            page_id: '112464600187556'
-            form_id: '1616801872291121'
+            created_time: '<created_time>'
+            leadgen_id: '<leadgen_id>'
+            page_id: '<page_id>'
+            form_id: '<form_id>'
+            form_question_1: 'form_response_1'
+            form_question_2: 'form_response_2'
+            form_question_3: 'form_response_3'
+            form_question_4: 'form_response_4'
+            form_question_5: 'form_response_5'
+            form_question_6: 'form_response_6'
+            form_question_7: 'form_response_7'
+            form_question_8: 'form_response_8'
+            form_question_9: 'form_response_9'
+            form_question_10: 'form_response_10'
         type: identify
         userId: <leadgen_id>
         anonymousId: <uuid>
@@ -43,5 +63,3 @@ data:
       id: <source_id>
       sourceDefinition:
         name: <source_name>
-metadata:
-  workspaceId: <workspace_id>
