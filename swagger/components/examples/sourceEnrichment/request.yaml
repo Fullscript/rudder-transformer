@@ -15,6 +15,21 @@ data:
         sentAt: '1970-01-01T00:00:00.000Z'
         integrations:
           All: true
+      - context:
+          traits:
+            created_time: '<created_time>'
+            leadgen_id: '<leadgen_id>'
+            page_id: '<page_id>'
+            form_id: '<form_id>'
+        type: identify
+        userId: <leadgen_id>
+        anonymousId: <uuid>
+        timestamp: '1970-01-01T00:00:00.000Z'
+        messageId: <page_id + form_id + leadgen_id>
+        originalTimestamp: '1970-01-01T00:00:00.000Z'
+        sentAt: '1970-01-01T00:00:00.000Z'
+        integrations:
+          All: true
     source:
       id: <source_id>
       sourceDefinition:
