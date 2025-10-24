@@ -31,7 +31,7 @@ paths:
   /features:
     $ref: './routes/misc.yaml#/~1features'
 
-  #Destination Routes
+  #Destination Transformation Routes
   /{version}/destinations/{destination}:
     $ref: './routes/destination.yaml#/~1{version}~1destinations~1{destination}'
   /routerTransform:
@@ -57,9 +57,13 @@ paths:
   /{version}/destinations/{destination}/proxyTest:
     $ref: './routes/delivery.yaml#/~1{version}~1destinations~1{destination}~1proxyTest'
 
-  #Source Routes
+  #Source Transformation Routes
   /{version}/sources/{source}:
     $ref: './routes/source.yaml#/~1{version}~1sources~1{source}'
+
+  #Webhook Sources Enrichment Routes
+  /${version}/enrichment/sources/{source}:
+    $ref: './routes/source.yaml#/~1{version}~1enrichment~1sources~1{source}'
 
   #User Transform Routes
   /customTransform:

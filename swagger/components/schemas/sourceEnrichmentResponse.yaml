@@ -1,0 +1,51 @@
+title: Source Enrichment Response
+type: object
+properties:
+  data:
+    type: array
+    items:
+      type: object
+      properties:
+        eventEnrichmentOutput:
+          type: object
+          required: true
+          description: The event enrichment output object
+          properties:
+            event:
+              $ref: './rudderMessage.yaml'
+              description: The enriched RudderStack event object
+            errorMessage:
+              type: string
+              required: false
+              description: The error message of the event enrichment operation
+            success:
+              type: boolean
+              required: true
+              description: Indicates if the event enrichment operation was successful
+        source:
+          type: object
+          required: true
+          description: The source object
+          properties:
+            id:
+              type: string
+              description: The id of the source
+              required: true
+            sourceDefinition:
+              type: object
+              required: true
+              description: The source definition object
+              properties:
+                name:
+                  type: string
+                  description: The name of the source definition
+                  required: true
+  metadata:
+    type: object
+    description: The metadata object
+    required: true
+    properties:
+      workspaceId:
+        type: string
+        required: true
+        description: The workspace id from the enrichment request

@@ -1,0 +1,49 @@
+title: Source Enrichment Request
+type: object
+properties:
+  data:
+    type: array
+    items:
+      type: object
+      properties:
+        events:
+          type: array
+          required: true
+          items:
+            $ref: './rudderMessage.yaml'
+        source:
+          type: object
+          required: true
+          description: The source object
+          properties:
+            id:
+              type: string
+              description: The id of the source
+              required: true
+            sourceDefinition:
+              type: object
+              required: true
+              description: The source definition object
+              properties:
+                name:
+                  type: string
+                  description: The name of the source definition
+                  required: true
+            account:
+              required: false
+              type: object
+              description: The authentication account details associated with the source
+              properties:
+                secret:
+                  required: true
+                  type: object
+                  description: The secret object
+  metadata:
+    type: object
+    description: The metadata object
+    required: true
+    properties:
+      workspaceId:
+        type: string
+        required: true
+        description: The workspace id associated with the enrichment request

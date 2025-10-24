@@ -1,0 +1,48 @@
+/{version}/enrichment/sources/{source}:
+  post:
+    tags:
+      - Source
+      - Enrichment
+    summary: Source enrichment
+    parameters:
+      - in: path
+        name: version
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: source
+        description: The source identifier
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/sourceEnrichmentRequest.yaml'
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '../components/schemas/sourceEnrichmentResponse.yaml'
+            examples:
+              success:
+                summary: Source Enrichment Success
+                value:
+                    - $ref: '../components/examples/sourceEnrichment/success.yaml'
+      500:
+        description: Failure (one or more events failed to be enriched)
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '../components/schemas/sourceEnrichmentResponse.yaml'
+            examples:
+              failure:
+                summary: Source Enrichment Failure
+                value:
+                  - $ref: '../components/examples/sourceEnrichment/failure.yaml'

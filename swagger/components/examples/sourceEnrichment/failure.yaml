@@ -1,0 +1,32 @@
+data:
+  - eventEnrichmentOutput:
+      success: false
+      errorMessage: 'Error message'
+    source:
+      id: <source_id>
+      sourceDefinition:
+        name: <source_name>
+  - eventEnrichmentOutput:
+      event:
+        context:
+          traits:
+            created_time: '1758794728'
+            leadgen_id: '1459076748710713'
+            page_id: '112464600187556'
+            form_id: '1616801872291121'
+        type: identify
+        userId: <leadgen_id>
+        anonymousId: <uuid>
+        timestamp: '1970-01-01T00:00:00.000Z'
+        messageId: <page_id + form_id + leadgen_id>
+        originalTimestamp: '1970-01-01T00:00:00.000Z'
+        sentAt: '1970-01-01T00:00:00.000Z'
+        integrations:
+          All: true
+      success: true
+    source:
+      id: <source_id>
+      sourceDefinition:
+        name: <source_name>
+metadata:
+  workspaceId: <workspace_id>
