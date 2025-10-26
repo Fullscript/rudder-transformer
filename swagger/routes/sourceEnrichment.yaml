@@ -11,8 +11,8 @@
         description: The version of the API
         schema:
           type: string
-        enum:
-          - v2
+          enum:
+            - v2
       - in: path
         name: source
         description: The source type. The lowercase value of the source name in the definition.
@@ -28,7 +28,7 @@
         request:
           summary: Source Enrichment Request
           value:
-            - $ref: '../components/examples/sourceEnrichment/request.yaml'
+            $ref: '../components/examples/sourceEnrichment/request.yaml'
     responses:
       400:
         description: Bad Request
