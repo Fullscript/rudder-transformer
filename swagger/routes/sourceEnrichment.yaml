@@ -30,6 +30,16 @@
           value:
             - $ref: '../components/examples/sourceEnrichment/request.yaml'
     responses:
+      400:
+        description: Bad Request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                errorMessage:
+                  type: string
+                  example: 'Bad Request'
       404:
         description: Source type not supported
         content:
