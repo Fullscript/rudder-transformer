@@ -27,8 +27,7 @@
       examples:
         request:
           summary: Source Enrichment Request
-          value:
-            $ref: '../components/examples/sourceEnrichment/request.yaml'
+          $ref: '../components/examples/sourceEnrichment/request.yaml'
     responses:
       400:
         description: Bad Request
@@ -60,12 +59,10 @@
             examples:
               success:
                 summary: Source Enrichment Success
-                value:
-                    - $ref: '../components/examples/sourceEnrichment/success.yaml'
+                $ref: '../components/examples/sourceEnrichment/success.yaml'
               failure:
                 summary: Source Enrichment Partial Success
-                value:
-                  - $ref: '../components/examples/sourceEnrichment/failure.yaml'
+                $ref: '../components/examples/sourceEnrichment/failure.yaml'
       500:
         description: Internal Server Error
         content:
