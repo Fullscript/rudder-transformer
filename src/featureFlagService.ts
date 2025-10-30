@@ -55,16 +55,8 @@ export async function getFeatureFlagService(): Promise<FeatureFlagService> {
       logger.error('Failed to initialize FeatureFlagService', {
         error: error.message,
         stack: error.stack,
-        provider: (process.env.FEATURE_FLAG_PROVIDER as string) || 'local',
+        provider: featureFlagConfig.provider,
         apiKeyPresent: !!process.env.FLAGSMITH_API_KEY,
-        config: {
-          enableLocalEvaluation: true,
-          enableCache: process.env.FEATURE_FLAG_ENABLE_CACHE !== 'false',
-          cacheTtlSeconds: handleNumericEnvVar(process.env.FEATURE_FLAG_CACHE_TTL_SECONDS, 600),
-          timeoutSeconds: handleNumericEnvVar(process.env.FEATURE_FLAG_TIMEOUT_SECONDS, 10),
-          retryAttempts: handleNumericEnvVar(process.env.FEATURE_FLAG_RETRY_ATTEMPTS, 3),
-          enableAnalytics: process.env.FEATURE_FLAG_ENABLE_ANALYTICS !== 'false',
-        },
       });
 
       // Reset initialization promise to allow retries
