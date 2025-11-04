@@ -5,6 +5,7 @@ import { SourcePostTransformationService } from '../services/source/postTransfor
 import { ControllerUtility } from './util';
 import logger from '../logger';
 import { SourceInputV2 } from '../types';
+import { HTTP_STATUS_CODES } from '../v0/util/constant';
 
 export class SourceController {
   public static async sourceTransform(ctx: Context) {
@@ -37,5 +38,29 @@ export class SourceController {
       source,
     });
     return ctx;
+  }
+
+  public static async sourceHydrate(ctx: Context) {
+    const requestBody = ctx.request.body as Record<string, unknown>;
+    const { source }: { source: string } = ctx.params;
+    const integrationService = ServiceSelector.getNativeSourceService();
+    const response = await integrationService.sourceHydrateRoutine(requestBody, source);
+    ControllerUtility.postProcess(ctx);
+    if ('error' in response) {
+      ctx.body = { error: response.error };
+      ctx.status = response.statusCode;
+    } else {
+      // Compute overall status code from jobs
+      let statusCode;
+      const firstError = response.jobs.find((job) => job.errorMessage);
+      if (firstError) {
+        statusCode = firstError.statusCode;
+      } else {
+        statusCode = HTTP_STATUS_CODES.OK;
+      }
+
+      ctx.body = { jobs: response.jobs };
+      ctx.status = statusCode;
+    }
   }
 }
