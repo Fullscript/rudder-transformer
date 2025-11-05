@@ -1379,6 +1379,9 @@ export const data = [
                         action_source: 'web',
                         event_id: '7208bbb6-2c4e-45bb-bf5b-ad426f3593e9',
                         app_id: '429047995',
+                        app_info: {
+                          user_agent: 'chrome',
+                        },
                         user_data: {
                           em: ['48ddb93f0b30c475423fe177832912c5bcdce3cc72872f8051627967ef278e08'],
                           ph: ['d164bbe036663cb5c96835e9ccc6501e9a521127ea62f6359744928ba932413b'],
@@ -1426,6 +1429,9 @@ export const data = [
                         action_source: 'web',
                         event_id: '7208bbb6-2c4e-45bb-bf5b-ad426f3593e9',
                         app_id: '429047995',
+                        app_info: {
+                          user_agent: 'chrome',
+                        },
                         user_data: {
                           em: ['48ddb93f0b30c475423fe177832912c5bcdce3cc72872f8051627967ef278e08'],
                           ph: ['d164bbe036663cb5c96835e9ccc6501e9a521127ea62f6359744928ba932413b'],
@@ -1473,6 +1479,9 @@ export const data = [
                         action_source: 'web',
                         event_id: '7208bbb6-2c4e-45bb-bf5b-ad426f3593e9',
                         app_id: '429047995',
+                        app_info: {
+                          user_agent: 'chrome',
+                        },
                         user_data: {
                           em: ['48ddb93f0b30c475423fe177832912c5bcdce3cc72872f8051627967ef278e08'],
                           ph: ['d164bbe036663cb5c96835e9ccc6501e9a521127ea62f6359744928ba932413b'],
@@ -1519,6 +1528,9 @@ export const data = [
                         action_source: 'web',
                         event_id: '7208bbb6-2c4e-45bb-bf5b-ad426f3593e9',
                         app_id: '429047995',
+                        app_info: {
+                          user_agent: 'chrome',
+                        },
                         user_data: {
                           em: ['48ddb93f0b30c475423fe177832912c5bcdce3cc72872f8051627967ef278e08'],
                           ph: ['d164bbe036663cb5c96835e9ccc6501e9a521127ea62f6359744928ba932413b'],

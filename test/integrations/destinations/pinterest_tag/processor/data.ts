@@ -2770,10 +2770,23 @@ export const data = [
               type: 'track',
               event: 'ABC Searched',
               sentAt: '2020-08-14T05:30:30.118Z',
-              channel: 'web',
+              channel: 'app_android',
               context: {
                 source: 'test',
                 userAgent: 'chrome',
+                app_package_name: 'com.exmaple.app',
+                app_store: 'Google Play',
+                install_time: 1762326098,
+                appId: 1234,
+                screen: {
+                  width: 6456,
+                  height: 76578,
+                },
+                app: {
+                  name: 'RudderLabs JavaScript SDK',
+                  version: '2.22.3',
+                  namespace: 'com.rudderlabs.javascript',
+                },
                 traits: {
                   anonymousId: '50be5c78-6c3f-4b60-be84-97805a316fb1',
                   email: 'abc@gmail.com',
@@ -2877,13 +2890,25 @@ export const data = [
               params: {},
               body: {
                 JSON: {
-                  action_source: 'web',
+                  action_source: 'app_android',
                   advertiser_tracking_enabled: true,
                   opt_out: false,
                   event_name: 'watch_video',
                   event_time: 1597383030,
                   event_id: '7208bbb6-2c4e-45bb-bf5b-ad426f3593e9',
                   app_id: '429047995',
+                  app_name: 'RudderLabs JavaScript SDK',
+                  app_version: '2.22.3',
+                  app_info: {
+                    app_name: 'RudderLabs JavaScript SDK',
+                    app_package_name: 'com.exmaple.app',
+                    app_store: 'Google Play',
+                    app_version: '2.22.3',
+                    install_time: 1762326098,
+                    user_agent: 'chrome',
+                    window_height: 76578,
+                    window_width: 6456,
+                  },
                   user_data: {
                     em: ['48ddb93f0b30c475423fe177832912c5bcdce3cc72872f8051627967ef278e08'],
                     ph: ['d164bbe036663cb5c96835e9ccc6501e9a521127ea62f6359744928ba932413b'],
@@ -3067,6 +3092,9 @@ export const data = [
                   event_time: 1597383030,
                   event_id: '7208bbb6-2c4e-45bb-bf5b-ad426f3593e9',
                   app_id: '429047995',
+                  app_info: {
+                    user_agent: 'chrome',
+                  },
                   user_data: {
                     em: ['48ddb93f0b30c475423fe177832912c5bcdce3cc72872f8051627967ef278e08'],
                     ph: ['d164bbe036663cb5c96835e9ccc6501e9a521127ea62f6359744928ba932413b'],
@@ -3253,6 +3281,9 @@ export const data = [
                   event_time: 1597383030,
                   event_id: '7208bbb6-2c4e-45bb-bf5b-ad426f3593e9',
                   app_id: '429047995',
+                  app_info: {
+                    user_agent: 'chrome',
+                  },
                   user_data: {
                     em: [
                       '48ddb93f0b30c475423fe177832912c5bcdce3cc72872f8051627967ef278e08',
@@ -3603,6 +3634,9 @@ export const data = [
                   action_source: 'web',
                   event_id: '7208bbb6-2c4e-45bb-bf5b-ad426f3593e9',
                   app_id: '429047995',
+                  app_info: {
+                    user_agent: 'chrome',
+                  },
                   user_data: {
                     em: ['48ddb93f0b30c475423fe177832912c5bcdce3cc72872f8051627967ef278e08'],
                     ph: ['d164bbe036663cb5c96835e9ccc6501e9a521127ea62f6359744928ba932413b'],
