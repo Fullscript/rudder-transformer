@@ -29,6 +29,14 @@ class Cache {
     return retVal;
   }
 
+  set(key, value, ttl) {
+    if (ttl !== undefined) {
+      this.cache.set(key, value, ttl);
+    } else {
+      this.cache.set(key, value);
+    }
+  }
+
   del(key) {
     this.cache.del(key);
   }
