@@ -26,14 +26,14 @@ import { assertRouterOutput, responses } from '../testHelper';
 import { initaliseReport } from '../test_reporter/reporter';
 import { FetchHandler } from '../../src/helpers/fetchHandlers';
 import { enhancedTestUtils } from '../test_reporter/allureReporter';
-import { configureBatchProcessingDefaults } from '@rudderstack/integrations-lib';
+import { configureBatchProcessingDefaults, axiosFromLib } from '@rudderstack/integrations-lib';
 
 // To run single destination test cases
 // npm run test:ts -- component  --destination=adobe_analytics
 // npm run test:ts -- component  --destination=adobe_analytics --feature=router
 // npm run test:ts -- component  --destination=adobe_analytics --feature=dataDelivery --index=0
 // Use below command to see verbose results
-// npm run test:ts -- component  --destination=adobe_analytics --feature=router --verbose=true
+// npm run test:ts -- component  --destination=adobe_analytics --feature=router --verbose true
 
 // Use below command to generate mocks
 // npm run test:ts -- component --destination=zendesk --generate=true
@@ -41,12 +41,13 @@ import { configureBatchProcessingDefaults } from '@rudderstack/integrations-lib'
 const command = new Command();
 command
   .allowUnknownOption()
+  .allowExcessArguments()
   .option('-d, --destination <string>', 'Enter Destination Name')
   .option('-f, --feature <string>', 'Enter Feature Name(processor, router)')
   .option('-i, --index <number>', 'Enter Test index', parseInt)
   .option('-g, --generate <string>', 'Enter "true" If you want to generate network file')
-  .option('-id, --id <string>', 'Enter unique "Id" of the test case you want to run')
-  .option('-verbose, --v <string>', 'Enter "true" If you want to see verbose test results')
+  .option('--id <string>', 'Enter unique "Id" of the test case you want to run')
+  .option('-v, --verbose <string>', 'Enter "true" If you want to see verbose test results')
   .option('-s, --source <string>', 'Enter Source Name')
   .parse();
 
@@ -77,6 +78,7 @@ const INTEGRATIONS_WITH_UPDATED_TEST_STRUCTURE = [
   'bluecore',
   'postscript',
   'attentive_tag',
+  'dub',
 ];
 
 const STREAMING_DEST_WITH_UPDATED_TEST_STRUCTURE = [
@@ -179,7 +181,8 @@ const testRoute = async (route, tcData: TestCaseData) => {
       tcData.name != 'mailmodo' &&
       tcData.name != 'iterable' &&
       tcData.name != 'klaviyo' &&
-      tcData.name != 'mailjet'
+      tcData.name != 'mailjet' &&
+      tcData.name != 'google_adwords_offline_conversions'
     ) {
       assertRouterOutput(response.body.output, tcData.input.request.body.input);
     }
@@ -222,6 +225,9 @@ const sourceTestHandler = async (tcData) => {
 const mockAdapter = new MockAxiosAdapter(axios as any, { onNoMatch: 'throwException' });
 registerAxiosMocks(mockAdapter, getTestMockData(opts.destination || opts.source));
 
+const mockAxiosFromLib = new MockAxiosAdapter(axiosFromLib as any, { onNoMatch: 'throwException' });
+registerAxiosMocks(mockAxiosFromLib, getTestMockData(opts.destination || opts.source));
+
 describe('Component Test Suite', () => {
   if (allTestDataFilePaths.length === 0) {
     // Reason: No test cases matched the given criteria
@@ -263,6 +269,7 @@ describe('Component Test Suite', () => {
                 }
 
                 tcData?.mockFns?.(mockAdapter);
+                tcData?.mockFns?.(mockAxiosFromLib);
 
                 switch (tcData.module) {
                   case tags.MODULES.DESTINATION:
@@ -271,6 +278,7 @@ describe('Component Test Suite', () => {
                   case tags.MODULES.SOURCE:
                     FetchHandler['sourceHandlerMap'] = new Map();
                     tcData?.mockFns?.(mockAdapter);
+                    tcData?.mockFns?.(mockAxiosFromLib);
                     await sourceTestHandler(tcData);
                     break;
                   default:

@@ -315,14 +315,14 @@ function processTrackEvent(messageType, message, destination, mappingJson, proce
     eventName.toLowerCase() === 'order completed'
   ) {
     const purchaseObjs = getPurchaseObjs(message, destination.Config);
+    const orderCompletedPayload = {
+      ...requestJson,
+      purchases: purchaseObjs,
+    };
     return buildResponse(
       message,
       destination,
-      {
-        attributes: [attributePayload],
-        purchases: purchaseObjs,
-        partner: BRAZE_PARTNER_NAME,
-      },
+      orderCompletedPayload,
       getTrackEndPoint(getEndpointFromConfig(destination)),
     );
   }
@@ -375,7 +375,9 @@ function processGroup(message, destination) {
       );
     }
     subscriptionGroup.subscription_state = message.traits.subscriptionState;
-    subscriptionGroup.external_ids = [message.userId];
+    if (message.userId) {
+      subscriptionGroup.external_ids = [message.userId];
+    }
     const phone = getFieldValueFromMessage(message, 'phone');
     const email = getFieldValueFromMessage(message, 'email');
     if (phone) {

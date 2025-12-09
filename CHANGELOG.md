@@ -2,6 +2,113 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.116.1](https://github.com/rudderlabs/rudder-transformer/compare/v1.116.0...v1.116.1) (2025-12-08)
+
+
+### Bug Fixes
+
+* skip returning events on source hydration errors  ([#4851](https://github.com/rudderlabs/rudder-transformer/issues/4851)) ([4b255b7](https://github.com/rudderlabs/rudder-transformer/commit/4b255b758546fab23bfb99197e8a8724d0f7cc62))
+
+## [1.116.0](https://github.com/rudderlabs/rudder-transformer/compare/v1.115.1...v1.116.0) (2025-12-02)
+
+
+### Features
+
+* add header for partnership in one_signal ([#4782](https://github.com/rudderlabs/rudder-transformer/issues/4782)) ([c646d6e](https://github.com/rudderlabs/rudder-transformer/commit/c646d6e0e50b00c05784f1f0ce4e5d711fa97b4e))
+* gaoc click and call batching ([#4788](https://github.com/rudderlabs/rudder-transformer/issues/4788)) ([6cf339c](https://github.com/rudderlabs/rudder-transformer/commit/6cf339c9582b93203a59a5a24cd1522c6bcf628d))
+* int 4194 add validation for nullundefined traits in sendinblue ([#4825](https://github.com/rudderlabs/rudder-transformer/issues/4825)) ([91bb6bf](https://github.com/rudderlabs/rudder-transformer/commit/91bb6bff7f8825199b2213d7c7775be564f166a0))
+* lib upgrade with new sdks functionality ([8e96ad1](https://github.com/rudderlabs/rudder-transformer/commit/8e96ad105a60f65f0521cef3f1b7d1789a2c3e06))
+* lib upgrade with new sdks functionality ([#4785](https://github.com/rudderlabs/rudder-transformer/issues/4785)) ([f5a422b](https://github.com/rudderlabs/rudder-transformer/commit/f5a422be46dfa0061d9b8e3d333d0a501e1fc4fe))
+
+
+### Bug Fixes
+
+* **facebook_lead_ads_native:** updated event structure to use camel casing ([#4810](https://github.com/rudderlabs/rudder-transformer/issues/4810)) ([11b72e7](https://github.com/rudderlabs/rudder-transformer/commit/11b72e74e14c25ccf67beb846c806148779c3593))
+* **gaoc:** handle case when partialFailureError code is zero ([#4832](https://github.com/rudderlabs/rudder-transformer/issues/4832)) ([6f03faf](https://github.com/rudderlabs/rudder-transformer/commit/6f03fafed9f03f63b4dcd382ccfc8c245f36cb29))
+* handle refresh scenario for the sdk response ([#4791](https://github.com/rudderlabs/rudder-transformer/issues/4791)) ([7a4352f](https://github.com/rudderlabs/rudder-transformer/commit/7a4352f3db68851e368da6918868fa3c87699940))
+* **mp:** handle non-string messageId to prevent slice error ([#4824](https://github.com/rudderlabs/rudder-transformer/issues/4824)) ([6d65b27](https://github.com/rudderlabs/rudder-transformer/commit/6d65b27191f3b09007960e224d9555f929cd1ac5))
+
+### [1.115.1](https://github.com/rudderlabs/rudder-transformer/compare/v1.115.0...v1.115.1) (2025-11-25)
+
+
+### Bug Fixes
+
+* **adj:** convert callback_params object values to string  ([#4817](https://github.com/rudderlabs/rudder-transformer/issues/4817)) ([52973a0](https://github.com/rudderlabs/rudder-transformer/commit/52973a06cca8fbf32f0721de75d75c42b2ca5615))
+
+## [1.115.0](https://github.com/rudderlabs/rudder-transformer/compare/v1.114.0...v1.115.0) (2025-11-21)
+
+
+### Features
+
+* send external_ids only when userId is present from router ([#4805](https://github.com/rudderlabs/rudder-transformer/issues/4805)) ([75d7a2a](https://github.com/rudderlabs/rudder-transformer/commit/75d7a2aa91a288ae7313c0352596b28704e8aa48))
+
+## [1.114.0](https://github.com/rudderlabs/rudder-transformer/compare/v1.113.1...v1.114.0) (2025-11-20)
+
+
+### Features
+
+* send external_ids only when userId is present ([#4801](https://github.com/rudderlabs/rudder-transformer/issues/4801)) ([0737620](https://github.com/rudderlabs/rudder-transformer/commit/07376208679f0b97fdef17ce4ab9bd5edfc82e3b))
+
+
+### Bug Fixes
+
+* **braze:** include userAttribute only when not an empty object in attributes ([#4802](https://github.com/rudderlabs/rudder-transformer/issues/4802)) ([c740b23](https://github.com/rudderlabs/rudder-transformer/commit/c740b23951f2449e7eb4c3d6d61b66370881a9b5))
+
+### [1.113.1](https://github.com/rudderlabs/rudder-transformer/compare/v1.113.0...v1.113.1) (2025-11-19)
+
+
+### Bug Fixes
+
+* handle refresh scenario for the sdk response ([#4791](https://github.com/rudderlabs/rudder-transformer/issues/4791)) ([9e8f38c](https://github.com/rudderlabs/rudder-transformer/commit/9e8f38cd3362c250c15392ed29a56382a7993f7f))
+* handle refresh scenario for the sdk response ([#4791](https://github.com/rudderlabs/rudder-transformer/issues/4791)) ([#4796](https://github.com/rudderlabs/rudder-transformer/issues/4796)) ([17f08a2](https://github.com/rudderlabs/rudder-transformer/commit/17f08a28e97349f2662f38c9221d90ed23b8c7ec))
+
+## [1.113.0](https://github.com/rudderlabs/rudder-transformer/compare/v1.112.1...v1.113.0) (2025-11-17)
+
+
+### Features
+
+* add set method support for cache class ([#4755](https://github.com/rudderlabs/rudder-transformer/issues/4755)) ([2372c56](https://github.com/rudderlabs/rudder-transformer/commit/2372c567f570cf5bad0a8f1515dd1644c9a01982))
+* implement source hydration for facebook lead ads native ([#4752](https://github.com/rudderlabs/rudder-transformer/issues/4752)) ([b2ba069](https://github.com/rudderlabs/rudder-transformer/commit/b2ba069bea4ed9b0d4fda992ef7ac1556fa67687))
+* update salesforce to soql ([#4771](https://github.com/rudderlabs/rudder-transformer/issues/4771)) ([123fcdf](https://github.com/rudderlabs/rudder-transformer/commit/123fcdf5f7199bfd46907ad37fb67b3f55f40f1b))
+
+### [1.112.1](https://github.com/rudderlabs/rudder-transformer/compare/v1.112.0...v1.112.1) (2025-11-13)
+
+
+### Bug Fixes
+
+* intercom legacy version mapping ([#4778](https://github.com/rudderlabs/rudder-transformer/issues/4778)) ([e2cee00](https://github.com/rudderlabs/rudder-transformer/commit/e2cee002a64a27b808124dbafa57b7b134db63b5))
+
+## [1.112.0](https://github.com/rudderlabs/rudder-transformer/compare/v1.111.2...v1.112.0) (2025-11-11)
+
+
+### Features
+
+* add advertiser_tracking_enabled mapping for pinterest without featureFlag ([#4740](https://github.com/rudderlabs/rudder-transformer/issues/4740)) ([c215fcd](https://github.com/rudderlabs/rudder-transformer/commit/c215fcd575a2ed188c8860389a3a7b4eae5b5db8))
+* add validation of diff in staging deployment workflow ([#4722](https://github.com/rudderlabs/rudder-transformer/issues/4722)) ([d85d396](https://github.com/rudderlabs/rudder-transformer/commit/d85d396d914fb564d706c1497fc9c78d37872aea))
+* introduce e2e tests UT ([#4686](https://github.com/rudderlabs/rudder-transformer/issues/4686)) ([fead46a](https://github.com/rudderlabs/rudder-transformer/commit/fead46aeb31d1ba458e1ef87ce7c1db5b5644663))
+* **reddit:** onboard v3 api ([#4699](https://github.com/rudderlabs/rudder-transformer/issues/4699)) ([acd18d1](https://github.com/rudderlabs/rudder-transformer/commit/acd18d19b405119a4c2d235e15e08f0441d5d09b))
+* source transformation endpoint for facebook_lead_ads_native source ([#4746](https://github.com/rudderlabs/rudder-transformer/issues/4746)) ([689261a](https://github.com/rudderlabs/rudder-transformer/commit/689261ae01b924dc46260418c6c05b4a4fdf6169))
+
+
+### Bug Fixes
+
+* intercom rETL flow when user_id only provided as identifier ([#4739](https://github.com/rudderlabs/rudder-transformer/issues/4739)) ([c44292f](https://github.com/rudderlabs/rudder-transformer/commit/c44292f9916f9aeb3534acbbb5e49291f919af44))
+
+### [1.111.2](https://github.com/rudderlabs/rudder-transformer/compare/v1.111.1...v1.111.2) (2025-10-30)
+
+
+### Bug Fixes
+
+* remove userid/deviceid level throttler handler for am ([#4743](https://github.com/rudderlabs/rudder-transformer/issues/4743)) ([085098c](https://github.com/rudderlabs/rudder-transformer/commit/085098c16992009abcd1138a63b8513697d15307))
+
+### [1.111.1](https://github.com/rudderlabs/rudder-transformer/compare/v1.111.0...v1.111.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* enable metrics for intermediate calls ([9cf8f05](https://github.com/rudderlabs/rudder-transformer/commit/9cf8f05abf39d2090fb33d0364dd18a9bfc8e959))
+* enable metrics for intermediate calls ([#4724](https://github.com/rudderlabs/rudder-transformer/issues/4724)) ([f3f5bb5](https://github.com/rudderlabs/rudder-transformer/commit/f3f5bb577c891b765bcb5de86c08dcdb82de01fd))
+
 ## [1.111.0](https://github.com/rudderlabs/rudder-transformer/compare/v1.110.0...v1.111.0) (2025-10-14)
 
 

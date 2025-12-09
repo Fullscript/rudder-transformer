@@ -14,12 +14,17 @@ const { CONVERSION_ACTION_ID_CACHE_TTL } = require('./config');
 const { getDeveloperToken } = require('../../util/googleUtils');
 const Cache = require('../../util/cache');
 
-const conversionActionIdCache = new Cache(CONVERSION_ACTION_ID_CACHE_TTL);
+const conversionActionIdCache = new Cache(
+  'GOOGLE_ADWORDS_ENHANCED_CONVERSIONS_ACTION_ID',
+  CONVERSION_ACTION_ID_CACHE_TTL,
+);
 
 const { getDynamicErrorType } = require('../../../adapters/utils/networkUtils');
 
 const tags = require('../../util/tags');
 const { getAuthErrCategory } = require('../../util/googleUtils');
+const { statsClient } = require('../../../util/stats');
+const logger = require('../../../logger');
 
 /**
  *  This function is used for collecting the conversionActionId using the conversion name
@@ -84,12 +89,20 @@ const getConversionActionId = async ({ params, googleAds }) => {
  */
 const gaecProxyRequest = async (request) => {
   const { body, params } = request;
-  const googleAds = new GoogleAdsSDK.GoogleAds({
-    accessToken: params.accessToken,
-    customerId: params.customerId,
-    loginCustomerId: params.subAccount ? params.loginCustomerId : '',
-    developerToken: getDeveloperToken(),
-  });
+  const googleAds = new GoogleAdsSDK.GoogleAds(
+    {
+      accessToken: params.accessToken,
+      customerId: params.customerId,
+      loginCustomerId: params.subAccount ? params.loginCustomerId : '',
+      developerToken: getDeveloperToken(),
+    },
+    {
+      httpClient: {
+        statsClient,
+        logger,
+      },
+    },
+  );
   const conversionActionId = await getConversionActionId({
     params,
     googleAds,
